@@ -3,12 +3,12 @@ local Vehicle3D = require(f.."ProportionalNavigation.Vehicle3D").GlobalVelocity3
 local array = require(f.."libs.array.array")
 
 local function make_ship_radar(ship_radar_peripheral,
-                               ship_reader_peripheral,
+                               ship_reader,
                                time_fn,
                                get_initial_target_fn, no_target_found_fn,
                                radius
 )
-    local t = {reader=ship_reader_peripheral, radar=ship_radar_peripheral}
+    local t = { reader= ship_reader, radar=ship_radar_peripheral}
 
     radius = radius or 256
 

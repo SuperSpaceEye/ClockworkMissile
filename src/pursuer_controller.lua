@@ -25,14 +25,14 @@ local function make_pi_clip(modif)
     return pi_clip
 end
 
-local function make_pursuer_controller(engine_controller, ship_reader, time_fn, last_time, angle_modif, acceleration, pid_args)
+local function make_pursuer_controller(engine_controller, ship_reader, time_fn, angle_modif, acceleration, pid_args)
     pid_args[1] = pid_args[1] or pid_args["Kp"] or 1.0
     pid_args[2] = pid_args[2] or pid_args["Ki"] or 1.0
     pid_args[3] = pid_args[3] or pid_args["Kd"] or 1.0
 
-    angle_modif = angle_modif or 100.
+    angle_modif = angle_modif or 20.
 
-    local t = {time_fn=time_fn, last_time = last_time or 0}
+    local t = {time_fn=time_fn, last_time=0}
     local pi_clip = make_pi_clip(angle_modif)
 
     pid_args.sample_time = 1./20
@@ -53,7 +53,7 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
 
         local pursuer = ship_reader.get_vehicle3D()
 
-        local new_yaw, new_pitch = get_angles(nL*dt)
+        local new_yaw, new_pitch = get_angles(nL)
         t.pitch_pid:set_starting(new_pitch); t.yaw_pid:set_starting(new_yaw)
         local pitch_gimbal = t.pitch_pid(pursuer.pitch())/angle_modif
         local yaw_gimbal   = t.yaw_pid  (pursuer.yaw())  /angle_modif

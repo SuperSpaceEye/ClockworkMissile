@@ -1,6 +1,6 @@
 local HeadingVelocity3d = require("src.ProportionalNavigation.Vehicle3D").HeadingVelocity3d
-local ZEM     = require("src.ProportionalNavigation.ZEM")
-local array   = require("src.libs.array.array")
+local ZEM   = require("src.ProportionalNavigation.ZEM")
+local array = require("src.libs.array.array")
 
 local homing_loop = require("src.homing_loop")
 

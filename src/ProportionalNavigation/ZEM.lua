@@ -9,6 +9,8 @@ local function ZEM(pursuer, target, N)
     local R = sqrt(dR:dot(dR))
     local V = sqrt(dV:dot(dV))
 
+    if V == 0 then V = 1e16 end
+
     local t_go = R / V
 
     local ZEM_i = dR + dV * t_go

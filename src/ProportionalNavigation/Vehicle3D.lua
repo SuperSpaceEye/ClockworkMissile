@@ -4,37 +4,38 @@ local array = require(f.."libs.array.array")
 
 local sin, cos = math.sin, math.cos
 
-local function rot_to_unit(psi, theta)
+local function rot_to_unit(yaw, pitch)
     return array({
-        cos(psi) * cos(theta),
-        sin(psi) * cos(theta),
-        sin(theta)
+        cos(yaw) * cos(pitch),
+        sin(yaw) * cos(pitch),
+        sin(pitch)
     })
 end
 
-local function HeadingVelocity3d(psi, theta, pos, V)
+local function HeadingVelocity3d(yaw, pitch, pos, V, id)
     local t = {}
-    t._psi = psi
-    t._theta = theta
+    t._yaw = yaw
+    t._pitch = pitch
     t.pos = pos
-    t.vel = rot_to_unit(psi, theta) * V
+    t.vel = rot_to_unit(yaw, pitch) * V
     t._V = V
+    t.id = id
 
-    t.psi = function(value)
+    t.yaw = function(value)
         if value == nil then
-            return t._psi
+            return t._yaw
         else
-            t._psi = value
-            t.vel = rot_to_unit(value, t._theta) * t._V
+            t._yaw = value
+            t.vel = rot_to_unit(value, t._pitch) * t._V
         end
     end
 
-    t.theta = function(value)
+    t.pitch = function(value)
         if value == nil then
-            return t._theta
+            return t._pitch
         else
-            t._theta = value
-            t.vel = rot_to_unit(t._psi, value) * t._V
+            t._pitch = value
+            t.vel = rot_to_unit(t._yaw, value) * t._V
         end
     end
 
@@ -43,11 +44,54 @@ local function HeadingVelocity3d(psi, theta, pos, V)
             return t._V
         else
             t._V = value
-            t.vel = rot_to_unit(t._psi, t._theta) * value
+            t.vel = rot_to_unit(t._yaw, t._pitch) * value
         end
     end
 
     return t
 end
 
-return {HeadingVelocity3d=HeadingVelocity3d}
+local function GlobalVelocity3d(pos, vel, id)
+    local t = {}
+    t.pos = pos
+    t.vel = vel
+    t.id  = id
+
+    t.get_angles = function()
+        local yaw   = math.atan2(t.vel[2], t.vel[1])
+        local pitch = math.atan2(t.vel[3], math.sqrt(t.vel[1]*t.vel[1] + t.vel[2]*t.vel[2]))
+        return yaw, pitch
+    end
+
+    t._yaw, t._pitch = t.get_angles()
+    t._V = vel / rot_to_unit(t._yaw, t._pitch)
+
+    t.yaw = function(value)
+        if value == nil then
+            return t._yaw
+        else
+            t._yaw = value
+            t.vel = rot_to_unit(value, t._pitch) * t._V
+        end
+    end
+
+    t.pitch = function(value)
+        if value == nil then
+            return t._pitch
+        else
+            t._pitch = value
+            t.vel = rot_to_unit(t._yaw, value) * t._V
+        end
+    end
+
+    t.V = function(value)
+        if value == nil then
+            return t._V
+        else
+            t._V = value
+            t.vel = rot_to_unit(t._yaw, t._pitch) * value
+        end
+    end
+end
+
+return {HeadingVelocity3d=HeadingVelocity3d, GlobalVelocity3d=GlobalVelocity3d}

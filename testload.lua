@@ -2,6 +2,8 @@ local HeadingVelocity3d = require("src.ProportionalNavigation.Vehicle3D").Headin
 local ZEM     = require("src.ProportionalNavigation.ZEM")
 local array   = require("src.libs.array.array")
 
+local homing_loop = require("src.homing_loop")
+
 local target = HeadingVelocity3d(0, 0, array({100, 100, 100}), 5)
 local pursuer = HeadingVelocity3d(0, 0, array({0, 0, 0}), 20)
 

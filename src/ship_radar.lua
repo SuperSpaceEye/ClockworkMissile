@@ -13,15 +13,15 @@ local function make_ship_radar(ship_radar_peripheral,
     radius = radius or 256
 
     local function read_radar()
-        if t.state == nil then
-            t.state = get_initial_target_fn()
-        end
-
         local missile_id = t.reader.getShipID()
+
+        if t.state == nil then
+            t.state = get_initial_target_fn(t.radar, radius, missile_id, array, Vehicle3D)
+        end
 
         local target
 
-        local radar_targets = t.radar.scan(radius)
+        local radar_targets = t.radar.scan(radius)[1] -- TODO remember
         for k, v in pairs(radar_targets) do
             if v.id == missile_id then
                 radar_targets[k] = nil

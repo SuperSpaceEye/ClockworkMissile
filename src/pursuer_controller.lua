@@ -26,6 +26,7 @@ local function make_pi_clip(modif)
 end
 
 local function make_pursuer_controller(engine_controller, ship_reader, time_fn, angle_modif, acceleration, pid_args)
+    pid_args = pid_args or {}
     pid_args[1] = pid_args[1] or pid_args["Kp"] or 1.0
     pid_args[2] = pid_args[2] or pid_args["Ki"] or 1.0
     pid_args[3] = pid_args[3] or pid_args["Kd"] or 1.0

@@ -3,6 +3,9 @@ local sqrt = math.sqrt
 local function ZEM(pursuer, target, N)
     N = N or 3
     if N <= 0 then error("Invalid proportional gain of "..N) end
+
+    print(target.pos, pursuer.pos)
+
     local dR = target.pos - pursuer.pos
     local dV = target.vel - pursuer.vel
 

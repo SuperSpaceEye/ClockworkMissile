@@ -42,8 +42,8 @@ local function make_ship_reader(ship_reader_peripheral, time_fn)
     end
 
     t.update_rv = function(acceleration, pitch_gimbal, yaw_gimbal, pitch_ar, yaw_ar)
-        t.rot.pitch(t.rot.pitch + pitch_ar)
-        t.rot.yaw  (t.rot.yaw   + yaw_ar)
+        t.rot.pitch(t.rot.pitch() + pitch_ar)
+        t.rot.yaw  (t.rot.yaw()   + yaw_ar)
         t.rot.V(acceleration * abs(cos(pitch_gimbal) * cos(yaw_gimbal)))
     end
     

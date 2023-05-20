@@ -1,6 +1,6 @@
 local G = 10
 local thrust = 320000
-MIN_R = 5
+MIN_R = 8
 
 local begin_execution = require("src.initializer")
 

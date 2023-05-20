@@ -47,7 +47,7 @@ local function make_functions(t)
         local d_error = error - (t._last_error ~= nil and t._last_error or error)
 
         if t.error_map ~= nil then
-            error = t:error_map(error)
+            error = t.error_map(error)
         end
 
         if not t.proportional_on_measurement then
@@ -154,7 +154,7 @@ local function make_functions(t)
     end
 
     t.set_starting = function(t, starting)
-        t._integral = _clamp(starting, t.output_limits)
+        t._integral = _clamp(starting, t:output_limits())
     end
 
     setmetatable(t, {__call = t.call})

@@ -92,6 +92,8 @@ local function GlobalVelocity3d(pos, vel, id)
             t.vel = rot_to_unit(t._yaw, t._pitch) * value
         end
     end
+
+    return t
 end
 
 return {HeadingVelocity3d=HeadingVelocity3d, GlobalVelocity3d=GlobalVelocity3d}

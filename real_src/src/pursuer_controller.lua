@@ -41,8 +41,8 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
     pid_args.error_map = pi_clip
     pid_args.time_fn=time_fn
 
-    t.pitch_pid = PID(deep_copy(pid_args))
-    t.yaw_pid   = PID(deep_copy(pid_args))
+    t.pitch_pid = PID(pid_args)
+    t.yaw_pid   = PID(pid_args)
 
     t.pitch_ar = 0
     t.yaw_ar   = 0
@@ -62,8 +62,8 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
         t.pitch_ar = t.pitch_ar + math.sin(pitch_gimbal) * dt * acceleration
         t.yaw_ar   = t.yaw_ar   + math.sin(yaw_gimbal)   * dt * acceleration
 
-        pursuer.pitch = pi_clip(pursuer.pitch + t.pitch_ar)
-        pursuer.yaw   = pi_clip(pursuer.yaw   + t.yaw_ar)
+        pursuer.pitch = pi_clip(pursuer.pitch() + t.pitch_ar)
+        pursuer.yaw   = pi_clip(pursuer.yaw()   + t.yaw_ar)
 
         ship_reader.update_rv(acceleration, pitch_gimbal, yaw_gimbal, t.pitch_ar, t.yaw_ar)
 

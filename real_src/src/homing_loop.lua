@@ -7,6 +7,7 @@ local function homing_loop_thread(N, target_radar, ship_reader, pursuer_controll
         local target  = target_radar.get_vehicle3D()
         local pursuer = ship_reader .get_vehicle3D()
         local res = ZEM(pursuer, target, N)
+        print(res.R)
         control_action(res, pursuer, target)
         pursuer_controller.update_velocity_vector(res.nL)
 

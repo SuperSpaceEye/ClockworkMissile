@@ -10,7 +10,7 @@ local function scalar_sub(tbl, item)
 end
 
 local function sub_array(tbl, other_tbl)
-    if #tbl.data ~= #other_tbl.data then error("Mismatched sizes") end
+    if #tbl.data ~= #other_tbl.data then error("Mismatched sizes", 2) end
     local copy = deep_copy(tbl)
 
     for i=1, #copy.data do
@@ -26,7 +26,7 @@ local function array_sub(tbl, item)
     elseif type(item) == "table" and item.is_array then
         return sub_array(tbl, item)
     else
-        error("Not valid parameter")
+        error("Not valid parameter", 2)
     end
 end
 

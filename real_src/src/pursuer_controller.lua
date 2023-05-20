@@ -55,6 +55,7 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
         local pursuer = ship_reader.get_vehicle3D()
 
         local new_yaw, new_pitch = get_angles(nL)
+        print("pitch, yaw", math.deg(new_pitch), math.deg(new_yaw))
         t.pitch_pid:set_starting(new_pitch); t.yaw_pid:set_starting(new_yaw)
         local pitch_gimbal = t.pitch_pid(pursuer.pitch())/angle_modif
         local yaw_gimbal   = t.yaw_pid  (pursuer.yaw())  /angle_modif

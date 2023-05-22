@@ -1,0 +1,26 @@
+{
+  // Output code in different ways depending on the given generator
+  generator: { name: "dense", column_span: 99999999},
+  // Define the rules that will transform the Lua code.
+  // If you do not provide this field, the default list of rules is
+  // going to be executed.
+  rules: [
+    "convert_index_to_field",
+    "compute_expression",
+    "group_local_assignment",
+    "filter_after_early_return",
+    "remove_comments",
+    "remove_empty_do",
+    "remove_function_call_parens",
+    "remove_nil_declaration",
+//    "remove_method_definition",
+    "remove_spaces",
+    "remove_unused_if_branch",
+    "remove_unused_while",
+    {
+      rule: "rename_variables",
+      globals: ["$default"],
+      include_functions: true,
+    }
+  ],
+}

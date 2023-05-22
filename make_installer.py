@@ -1,5 +1,13 @@
 import os
 
+minify = True
+
+if minify:
+    os.system("sh minify.sh")
+    install_path = "minified"
+else:
+    install_path = "real_src"
+
 installer_file = \
 """
 for k, v in pairs({LEFT}{MAKE_DIRS}{RIGHT}) do
@@ -15,12 +23,12 @@ end
 dirs = []
 src_files = []
 
-for root, dir, files in os.walk("real_src"):
+for root, dir, files in os.walk(install_path):
     root = root.split("/")[1::]
     if len(root) > 0:
         dirs.append(f'\"{"/".join(root)}\"')
     for file in files:
-        path = "/".join(["real_src"] + root + [file])
+        path = "/".join([install_path] + root + [file])
         with open(path, mode="r") as f:
             data = f.read()
         src_files.append([

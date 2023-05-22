@@ -1,0 +1,1 @@
+darklua process real_src/ minified/ --config /home/spaceeye/PycharmProjects/ClockworkMissile/darklua.json5

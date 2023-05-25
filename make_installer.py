@@ -1,6 +1,6 @@
 import os
 
-minify = True
+minify = False
 
 if minify:
     os.system("sh minify.sh")

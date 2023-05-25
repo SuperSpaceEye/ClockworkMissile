@@ -70,7 +70,7 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
         local pitch_g = t.pitch_pid(rot_pursuer.pitch())/angle_modif
         local yaw_g   = t.yaw_pid  (rot_pursuer.yaw())  /angle_modif
 
-        local r = ship_reader.get_rot()
+        local r = ship_reader.get_rot().roll
 
         -- gc = gimbal change
         -- global to relative can (probably) go outside of allowed range, so convert to relative, clip it and convert back

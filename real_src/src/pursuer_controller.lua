@@ -2,11 +2,18 @@ local f = (...):match("(.-)[^%.]+$")
 local array = require(f.."libs.array.array")
 local deep_copy = require(f.."libs.array.common.deep_copy")
 local PID = require(f.."libs.pid")
+local roll_rotate = require(f.."libs.roll_rotate")
 
 local function get_angles(vel)
         local yaw   = math.atan2(vel[2], vel[1])
         local pitch = math.atan2(vel[3], math.sqrt(vel[1]*vel[1] + vel[2]*vel[2]))
         return yaw, pitch
+end
+
+local function clip(num, min, max)
+    if num < min then return min end
+    if num > max then return max end
+    return num
 end
 
 local function make_pi_clip(modif)
@@ -33,11 +40,13 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
 
     angle_modif = angle_modif or 20.
 
+    local limits = {min=math.rad(-22.5), max=math.rad(22.5)}
+
     local t = {time_fn=time_fn, last_time=0}
     local pi_clip = make_pi_clip(angle_modif)
 
     pid_args.sample_time = 1./20
-    pid_args.output_limits = {math.rad(-22.5)*angle_modif, math.rad(22.5)*angle_modif}
+    pid_args.output_limits = {limits.min*angle_modif, limits.max*angle_modif}
     pid_args.error_map = pi_clip
     pid_args.time_fn=time_fn
 
@@ -52,23 +61,31 @@ local function make_pursuer_controller(engine_controller, ship_reader, time_fn, 
         local dt = this_time - t.last_time
         t.last_time = this_time
 
-        local pursuer = ship_reader.get_vehicle3D()
+        local rot_pursuer = ship_reader.get_vehicle3D()
 
+        -- roll 0
         local new_yaw, new_pitch = get_angles(nL)
         print("pitch, yaw", math.deg(new_pitch), math.deg(new_yaw))
         t.pitch_pid:set_starting(new_pitch); t.yaw_pid:set_starting(new_yaw)
-        local pitch_gimbal = t.pitch_pid(pursuer.pitch())/angle_modif
-        local yaw_gimbal   = t.yaw_pid  (pursuer.yaw())  /angle_modif
+        local pitch_g = t.pitch_pid(rot_pursuer.pitch())/angle_modif
+        local yaw_g   = t.yaw_pid  (rot_pursuer.yaw())  /angle_modif
 
-        t.pitch_ar = t.pitch_ar + math.sin(pitch_gimbal) * dt * acceleration
-        t.yaw_ar   = t.yaw_ar   + math.sin(yaw_gimbal)   * dt * acceleration
+        local r = ship_reader.get_rot()
 
-        pursuer.pitch = pi_clip(pursuer.pitch() + t.pitch_ar)
-        pursuer.yaw   = pi_clip(pursuer.yaw()   + t.yaw_ar)
+        -- gc = gimbal change
+        -- global to relative can (probably) go outside of allowed range, so convert to relative, clip it and convert back
+        -- to not simulate incorrect gimbal
+        local rel_gc_p, rel_gc_y = roll_rotate(r, pitch_g, yaw_g)
+        rel_gc_p, rel_gc_y = clip(rel_gc_p, limits.min, limits.max), clip(rel_gc_y, limits.min, limits.max)
+        local g_gc_p, g_gc_y = roll_rotate(-r, rel_gc_p, rel_gc_y)
 
-        ship_reader.update_rv(acceleration, pitch_gimbal, yaw_gimbal, t.pitch_ar, t.yaw_ar)
+        t.pitch_ar = t.pitch_ar + math.sin(g_gc_p) * dt * acceleration
+        t.yaw_ar   = t.yaw_ar   + math.sin(g_gc_y) * dt * acceleration
 
-        engine_controller.set_gimbal(pitch_gimbal, yaw_gimbal)
+        ship_reader.update_rv(acceleration, pitch_g, yaw_g, t.pitch_ar, t.yaw_ar)
+
+        pitch_g, yaw_g = roll_rotate(r, pitch_g, yaw_g) -- give rotation with relation to roll to actual engine controller
+        engine_controller.set_gimbal(pitch_g, yaw_g)
     end
 
     return t
